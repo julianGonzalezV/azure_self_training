@@ -1,0 +1,46 @@
+https://github.com/helm/helm
+
+Herramienta para gestionar charts, los charts son paquetes que contiene recursos kubernetes preconfigurados
+
+https://helm.sh/docs/ >> 
+
+A Chart is a Helm package. It contains all of the resource definitions necessary to run an application
+
+Three big concepts.
+https://helm.sh/docs/intro/using_helm/
+Helm installs charts into Kubernetes, creating a new release for each installation. And to find new charts, you can search Helm chart repositories.
+
+Vocabulario:
+ConfigMap: Desacopla la configuración de los artefactos de la Implementacion ó contenido de la imagen
+Secrets: Permite que se guarde las ifnrmación sensible como la autenticación en archivos más confidenciales, con esto ya no se guardaría en el POD
+la idea es separar configuración y secret en archivos YAML diferentes del service.yaml y deployment.yaml
+
+https://docs.bitnami.com/kubernetes/how-to/create-your-first-helm-chart/
+
+Helm can be useful in different scenarios:
+
+Find and use popular software packaged as Kubernetes charts
+Share your own applications as Kubernetes charts
+Create reproducible builds of your Kubernetes applications
+Intelligently manage your Kubernetes object definitions
+Manage releases of Helm packages
+
+Step 1. Generate Your First Chart
+
+Estructura de un chart
+mychart
+|-- Chart.yaml
+|-- charts
+|-- templates
+|   |-- NOTES.txt
+|   |-- _helpers.tpl
+|   |-- deployment.yaml
+|   |-- ingress.yaml
+|   `-- service.yaml
+`-- values.yaml
+
+ver explicacion de cada una en el sitio
+
+
+The Chart.yaml file : https://helm.sh/docs/topics/charts/
+

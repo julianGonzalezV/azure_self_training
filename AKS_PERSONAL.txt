@@ -1,0 +1,302 @@
+1) $az group create --name ecoDigitalGr --location eastus
+output:
+{
+  "id": "/subscriptions/0f3b6480-7d93-4d87-a9a0-318d7928067f/resourceGroups/ecoDigitalGr",
+  "location": "eastus",
+  "managedBy": null,
+  "name": "ecoDigitalGr",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": null,
+  "type": "Microsoft.Resources/resourceGroups"
+}
+
+2) Create azure container registry
+az acr create -n $ACRName -g $ACRResourceGroupName --sku Standard
+en el ejemplo sería
+az acr create -n ecoDigitalAcr -g ecoDigitalGr --sku Standard
+Output:
+{
+  "id": "/subscriptions/0f3b6480-7d93-4d87-a9a0-318d7928067f/resourceGroups/ecoDigitalGr",
+  "location": "eastus",
+  "managedBy": null,
+  "name": "ecoDigitalGr",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": null,
+  "type": "Microsoft.Resources/resourceGroups"
+}
+
+3) Activate ACR (To search ACr information like ACR name and passwprd)
+$ az acr update -n ecoDigitalAcr --admin-enabled true
+output(note los cambios en el JSON por ejemplo "adminUserEnabled": false,):
+{
+  "adminUserEnabled": true,
+  "creationDate": "2020-02-13T16:22:32.716365+00:00",
+  "id": "/subscriptions/0f3b6480-7d93-4d87-a9a0-318d7928067f/resourceGroups/ecoDigitalGr/providers/Microsoft.ContainerRegistry/registries/ecoDigitalAcr",
+  "location": "eastus",
+  "loginServer": "ecodigitalacr.azurecr.io",
+  "name": "ecoDigitalAcr",
+  "networkRuleSet": null,
+  "policies": {
+    "quarantinePolicy": {
+      "status": "disabled"
+    },
+    "retentionPolicy": {
+      "days": 7,
+      "lastUpdatedTime": "2020-02-13T16:22:33.164258+00:00",
+      "status": "disabled"
+    },
+    "trustPolicy": {
+      "status": "disabled",
+      "type": "Notary"
+    }
+  },
+  "provisioningState": "Succeeded",
+  "resourceGroup": "ecoDigitalGr",
+  "sku": {
+    "name": "Standard",
+    "tier": "Standard"
+  },
+  "status": null,
+  "storageAccount": null,
+  "tags": {},
+  "type": "Microsoft.ContainerRegistry/registries"
+}
+
+4) Get ACR Name And Password
+Name: $az acr credential show -n ecoDigitalAcr -g ecoDigitalGr --query username -o tsv
+	Result: ecoDigitalAcr
+Password: $ az acr credential show -n ecoDigitalAcr -g ecoDigitalGr --query passwords[0].value -o tsv
+	Result/ jDXkvcBJvcNoWSYGJ9nzfO2=BrshI3QG
+
+
+5) create AKS Cluster, 
+az aks create --resource-group ecoDigitalGr --name ecoDigitalCluster --node-count 1 --enable-addons monitoring --generate-ssh-keys
+Sale error --> error_cluster1.PNG
+Solución:
+az ad sp create-for-rbac -n $AKSClusterName ---donde $AKSClusterName será ecoDigitalCluster + Sp
+az ad sp create-for-rbac -n ecoDigitalClusterSp
+OutPut
+{
+  "appId": "481d2be0-062c-4528-86cb-f57c3da8f8cc",
+  "displayName": "ecoDigitalClusterSp",
+  "name": "http://ecoDigitalClusterSp",
+  "password": "8c023497-95eb-49a7-b8c8-926bc14c1384",
+  "tenant": "8673c70e-96ae-4295-bcef-ca5d562e12cc"
+}
+
+6) 
+ Get AKSClusterServicePrincipalAppId;
+ az ad sp list --display-name ecoDigitalClusterSp --query "[].appId" -o tsv
+output: 481d2be0-062c-4528-86cb-f57c3da8f8cc  (es el mismo del json arriba pero en caso tal de que no tengamos el json)
+
+7)
+# reset service principal password
+    AKSClusterServicePrincipalPassword=$(az ad sp credential reset --name $AKSClusterName --query password -o tsv)
+#EL PASO ANTERIOR ES CUESTIONABLE EN LA DOCUMENTACION DEL GITHUB Y MÁS bien intentemos de obtener el passwor, note que aunque está arriba en el output 
+cuando se creó el Sp el probale que en un script sea necesario obtenerlo, ejemplo 
+az ad sp show --id http://ecoDigitalClusterSp --query password --output tsv	NO funciona! :( :( :( 
+
+Por eso entonce SI ES NECESARIO 
+$AKSClusterServicePrincipalPassword=$(az ad sp credential reset --name ecoDigitalClusterSp --query password -o tsv)
+por comando requiere el $ pero en el archivo .sh no es necesario
+
+8) Ahora si 
+  # create aks cluster
+    az aks create \
+    --resource-group ecoDigitalGr \
+    --name ecoDigitalCluster \
+    --node-count 1 \    
+    --generate-ssh-keys \
+    --service-principal 481d2be0-062c-4528-86cb-f57c3da8f8cc \
+    --client-secret $AKSClusterServicePrincipalPassword \
+    --enable-vmss \
+    --kubernetes-version 1.13.12
+	
+debe llevarlo a one liner si desea ejecutar el comando solo en consola, ejemplo:
+az aks create --resource-group ecoDigitalGr --name ecoDigitalCluster --node-count 1 --generate-ssh-keys --service-principal 481d2be0-062c-4528-86cb-f57c3da8f8cc --client-secret $AKSClusterServicePrincipalPassword --enable-vmss --kubernetes-version 1.13.12
+
+tuve que quitar esta propiedad para que funcionara --enable-vmss \
+	
+Dentro de las propietades que tiene se le puede meter --node-vm-size $AksVmSize \ ---> por jemplo Standard_D2s_v3, pero para el ejercicio vamos a intentar 
+sin esa propiedad a ver cual le coloca por defecto ....
+..5mins later ..si coloca un valor por defecto de Standard_DS2_v2
+
+9)
+    # download .kube config to client machine
+	Formato:  az aks get-credentials --resource-group $AKSResourceGroupName --name $AKSClusterName
+	Comando:
+    az aks get-credentials --resource-group ecoDigitalGr --name ecoDigitalCluster   ------> Get access credentials for a managed Kubernetes cluste
+	
+	Output: Merged "ecoDigitalCluster" as current context in /home/julian/.kube/config : Descarga el .kube en la ruta que se muestra
+
+10)
+    # assign permissions to dashboard
+    kubectl create clusterrolebinding kubernetes-dashboard -n kube-system --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
+	> To drive authorization decisions, allowing admins to dynamically configure policies through the Kubernetes API.
+OutPut: clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
+
+11)  Open AKS dashboard
+Formato: az aks browse --resource-group $AKSResourceGroupName --name $AKSClusterName
+Consola:
+az aks browse --resource-group ecoDigitalGr --name ecoDigitalCluster
+Output: a new bowser window redirecting to https://gateway13.southcentralus.console.azure.com/n/cc-27f467dd/cc-27f467dd/proxy/8001/
+
+
+Hasta acá tendremos dos variables de salida
+echo "Take note of the KubernetesCluster: " = ecoDigitalClusterSp
+y
+echo "Take note of the KubernetesClusterResourceGroup: " = ecoDigitalGr
+
+12)
+	validate the current context 
+
+az aks get-credentials --resource-group ecoDigitalGr --name ecoDigitalCluster
+kubectl config current-context --(for validating)
+
+13) 
+Create a Kubernetes Service namespace with the name:
+	> Kubernetes namespaces help different projects, teams, or customers to share a Kubernetes cluster
+	en la documentación de kubernetes (https://kubernetes.io/docs/tasks/administer-cluster/namespaces-walkthrough/)
+	lo usan para crear un namespace para develop y tro namespace para pdn
+Para éste ejemplo ejecutaremos:	
+kubectl create namespace development
+
+	Para listar los namespaces sería 'kubectl get namespaces'
+
+Step 14:
+
+Configure the docker-registry secret for Kubernetes Service. (https://docs.docker.com/registry/)
+	Why use it
+	You should use the Registry if you want to:
+
+	tightly control where your images are being stored
+	fully own your images distribution pipeline
+	integrate image storage and distribution tightly into your in-house development workflow
+	
+Command:
+link https://kubernetes.io/docs/concepts/configuration/secret/
+	A Kubernetes Secret is used to inject sensitive data into pods, such as access credentials or keys
+	ACR: Azure Container Registry
+	Formato:
+	kubectl create secret docker-registry [dockerRegistrySecretName] --docker-server [acrRegistryName].azurecr.io --docker-username [acrRegistryUsername] --docker-password [acrRegistryPassword] --docker-email [acrEmailAccount] --namespace challenge-01
+	Comando: 
+	kubectl create secret docker-registry juligoveacr01-auth --docker-server ecoDigitalAcr.azurecr.io --docker-username ecoDigitalAcr --docker-password jDXkvcBJvcNoWSYGJ9nzfO2=BrshI3QG --docker-email j.andres2087@hotmail.com --namespace development
+		Output secret/juligoveacr01-auth created
+
+Step 15: install helm: HELM chart allows the applicatins deployment in Kubernetes Service.
+what is helm: https://helm.sh/
+https://docs.microsoft.com/en-us/azure/aks/kubernetes-helm
+helm chart?: https://helm.sh/docs/topics/charts/
+How to install helm 
+https://helm.sh/docs/intro/install/
+
+En mi caso ya estaba instalado por la siguiente Nota.
+Note!: If you use the Azure Cloud Shell, the Helm CLI is already installed. For installation instructions on your local platform, see Installing Helm.
+
+
+
+
+Preguntas:
+Hacen git clone en la raiz de la cuenta?, ejemplo del proyecto docker
+
+Ejemplo de DEPLIEGUE:
+https://docs.microsoft.com/bs-latn-ba/azure/container-registry/container-registry-tutorial-quick-task
+ACR_NAME=ecoDigitalAcr
+RES_GROUP=$ACR_NAME # Resource Group name
+
+az group create --resource-group $RES_GROUP --location eastus # NO VOY A CREAR OTRO RESOURCE GROUP PORQUE YA ENGO UNO QUE SE LLAMA ecoDigitalGr
+output:
+{
+  "id": "/subscriptions/74549a7d-42d2-4b1d-ac9a-c8f1a4e47489/resourceGroups/ecoDigitalAcr",
+  "location": "eastus",
+  "managedBy": null,
+  "name": "ecoDigitalAcr",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": null,
+  "type": "Microsoft.Resources/resourceGroups"
+}
+az acr create --resource-group $RES_GROUP --name $ACR_NAME --sku Standard --location eastus # nO CREO EL ACR PORQUE YA TENEMOS UNO QUE SE LLAMA ecoDigitalAcr
+
+
+este si lo ejecuto!
+az acr build --registry ecoDigitalAcr --image helloacrtasks:v1 .
+salida a la final: (adicional en el log se ve como resuelve las dependencias del proyecto para al final desplegar)
+- image:
+    registry: ecodigitalacr.azurecr.io
+    repository: helloacrtasks
+    tag: v1
+    digest: sha256:9318e4035ae1481fcde3d40cc0a0d8bc5779986f950e308d8cd08e84b855e108
+  runtime-dependency:
+    registry: registry.hub.docker.com
+    repository: library/node
+    tag: 9-alpine
+    digest: sha256:8dafc0968fb4d62834d9b826d85a8feecc69bd72cd51723c62c7db67c6dec6fa
+  git: {}
+
+Run ID: ca1 was successful after 26s
+
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+Deploy to Azure Container Instances:::::::::::::::::::::::::::::::
+
+si todo fué ok entonces ACR automáticamente hace push de la imagen al registry 
+se puede comprobar de la siguiente manera:
+listar las imagenes creadas:
+az acr repository list --name ecoDigitalAcr --output table
+
+> Para poder desplegar a Azure Container Instances -ACI se requiere crear un KEY VAULT ver archivo AZURE_KEY_VAULT.txt
+
+
+Luego de ejeuctar los pasos en AZURE_KEY_VAULT.txt
+entonces:
+
+:::::::::::Deploy a container with Azure CLI:::::::::::::
+Antes verifique cuantos grupo de contenedores tiene:
+$ az container list
+OUTPUT: []--vacío :) 
+
+Variables
+AKV_NAME=eco-digital-vault
+EN CASO DE NO CONOCER LAS CREDENCIALES DE SU REGISTRY ENTONCES EJECUTE:
+mUESTRA TODO:
+$ az acr credential show -n ecoDigitalAcr
+SOLO USERNAME
+$ az acr credential show -n ecoDigitalAcr --query username
+SOLO PASSWORD
+az acr credential show -n ecoDigitalAcr --query passwords[0].value
+az container create \
+    --resource-group ecoDigitalGr \
+    --name acr-tasks \
+    --image ecoDigitalAcr.azurecr.io/helloacrtasks:v1 \
+    --registry-login-server ecoDigitalAcr.azurecr.io \
+    --registry-username ecoDigitalAcr \
+    --registry-password jDXkvcBJvcNoWSYGJ9nzfO2=BrshI3QG \
+    --dns-name-label acr-tasks-ecoDigitalAcr \
+    --query "{FQDN:ipAddress.fqdn}" \
+    --output table
+
+outPut:
+FQDN
+acr-tasks-ecoDigitalAcr.eastus.azurecontainer.io
+Al pegar esto en su navegador se podrá ver el despliegue :) PERO ANTES VERIFIQUE EL ESTADO DEL DESPLIEGUE CON EL COMANDO:
+az container attach --resource-group ecoDigitalGr --name acr-tasks
+
+De lo anterior y para un script.sh o bash Para un script podría ser así:
+    --registry-username $(az keyvault secret show --vault-name $AKV_NAME --name ecoDigitalAcr-pull-usr --query value -o tsv) \
+    --registry-password $(az keyvault secret show --vault-name $AKV_NAME --name ecoDigitalAcr-pull-pwd --query value -o tsv) \
+	
+en este caso en la línea 272 y 273 se colocan quemados pero en un  ambiente real se debe tratar de colocar scripts o llenar variables con scripts
+
+Pare vaerificar que tiene un nuevo contenedor entonces ejecute de nuevo la linea que ejecutó arriba:
+$ az container list --output table
+Ya tenemos un contenedor creado y corriendo!!_
+Name       ResourceGroup    Status     Image                                      IP:ports          Network    CPU/Memory       OsType    Location
+---------  ---------------  ---------  -----------------------------------------  ----------------  ---------  ---------------  --------  ----------
+acr-tasks  ecoDigitalGr     Succeeded  ecoDigitalAcr.azurecr.io/helloacrtasks:v1  52.149.247.48:80  Public     1.0 core/1.5 gb  Linux     eastus

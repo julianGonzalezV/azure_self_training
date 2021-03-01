@@ -1,0 +1,234 @@
+Resumen de los comandos usados a travez de la exploracion azure:
+
+az --version --> esto no será problema si se usa el shell de azure sin instalar en el local. ya que en teoría están siempre en la ultima versión
+az account list --output table (listar las suscripciones)
+az group list (listar los grupos de recursos) en formato json
+az group list --output table (listar los grupos de recursos) en formato tabla
+az resource list (lista de los recursos)
+
+Recursos orientados a un sitio web:
+az resource list \
+    --resource-group RESOURGROUPNAME \
+    --resource-type Microsoft.Web/sites --output table
+	
+En la parte "Microsoft.Web/sites" del comando , se le indica/filtra los recurtos de Tipo = Sitio Web
+
+Ejemplo de salida:
+app-eg01  RESOURGROUPNAME  centralus   Microsoft.Web/sites  --LA primera columna es el name del aplicativo
+
+para el caso de la práctica la url del sitio es =    http://app-eg01.azurewebsites.net/wp-admin/install.php   
+
+::::::Stop y Start de nuesto aplicativo::::::::
+az webapp stop \
+    --resource-group RESOURGROUPNAME \
+    --name <web app name> en este caso app-eg01
+	
+az webapp start \
+    --resource-group RESOURGROUPNAME \
+    --name <web app name> en este caso app-eg01
+	
+Crear un grupo de recursos: El grupo de recursos pertenece a una suscripción, 
+a su vez el grupo de recursos, como su nombre lo indica contiene un listado de recursos
+$ az group create --name myResourceGroup --location eastus
+
+create AKS Cluster:
+az aks create --resource-group myResourceGroup --name myAKSCluster --node-count 1 --enable-addons monitoring --generate-ssh-keys
+para el caso de la prueba fué 
+
+
+*********************************************************************************************************************
+*********************************************************************************************************************
+
+#Terraform
+#Crear
+terraform workspace new dllo
+#Seleccionar
+terraform workspace select dllo
+#Listar workspace
+terraform workspace list
+# Cuando se inicia o se agrega un nuevo modulo
+terraform init
+#Hacer el plan
+terraform plan -out plan -var-file=dllo.tfvars
+#Aplicar el plan
+terraform apply plan
+
+#Generar imagenes desde docker compose
+docker-compose build
+
+#Build sin docker compose
+docker build -t ms-api-sel . --build-arg APP_PORT=8081 --build-arg APP_NAME=ms-api-sel --build-arg STAGE=develop
+
+#Hacer tag de las imagenes
+docker tag ms-flujo-negocio-ventas-digitales projecenvironment.azurecr.io/aplicaciones/msflujonegocioventasdigitales:1.0.0
+docker tag ms-maestros-sel projecenvironment.azurecr.io/aplicaciones/msmaestros:1.0.0
+docker tag ohs-ventas-digitales projecenvironment.azurecr.io/aplicaciones/ohsventasdigitales:1.0.0
+docker tag ms-servicio-pagos-sel projecenvironment.azurecr.io/aplicaciones/msserviciopagos:1.0.0
+docker tag ms-api-sel projecenvironment.azurecr.io/aplicaciones/msapi:1.0.0
+docker tag front_end_sel projecenvironment.azurecr.io/aplicaciones/webxxxenlinea:1.0.0
+
+
+#Loggin al acr
+az acr login --name projecenvironment
+
+#Push a las imagenes al acr
+docker push projecenvironment.azurecr.io/aplicaciones/componente:1.0.0
+
+#Obtener credenciales del cluster
+az aks get-credentials -n aks-name-dllo-001 --resource-group rg-area-dllo-001 --subscription "sub"
+
+az aks get-credentials -n aks-name-lab-001 --resource-group rg-NAME-lab-001 --subscription "sub"
+
+az aks get-credentials -n aks-name-pdn-001 --resource-group rg-NAME-pdn-001 --subscription "sub"
+#Abrir consola administratica
+az aks browse -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscription "sub"
+
+az aks browse --name aks-name-lab-001 --resource-group rg-NAME-lab-001 --subscription "sub"
+
+az aks browse --name aks-name-pdn-001 --resource-group rg-NAME-pdn-001 --subscription "sub"
+
+#Crear un nuevo namespace dentro del cluster
+kubectl create namespace xxx-en-linea
+
+#Crear secreo para que pueda hacer pull las imagenes del acr privado
+kubectl create secret docker-registry dllo --docker-server acrNAMEdllo001.azurecr.io --docker-username acrNAMEdllo001 --docker-password PWD --docker-email bgallego@xxx.com.co --namespace soluciones
+
+#Agregar repo del acr dentro de helm
+helm repo add projecenvironment https://projecenvironment.azurecr.io/helm/v1/repo --username projecenvironment --password PWD
+
+repolab
+#Generar los comprimidos de todos los charts
+helm package --version 1.0.0 --app-version=1.0.0 ms-api-sel-chart
+helm package --version 1.0.0 --app-version=1.0.0 ms-flujo-negocio-ventas-digitales-chart
+helm package --version 1.0.0 --app-version=1.0.0 ms-maestros-sel-chart
+helm package --version 1.0.0 --app-version=1.0.0 ms-servicio-pagos-sel-chart
+helm package --version 1.0.0 --app-version=1.0.0 ohs-ventas-digitales-chart
+
+
+#Hacer push de los charts al acr
+az acr helm push -n projecenvironment -u projecenvironment -p <PASWORD> ms-api-sel-chart-1.0.0.tgz --force
+az acr helm push -n projecenvironment -u projecenvironment -p PASSWORD ms-flujo-negocio-ventas-digitales-chart-1.0.0.tgz --force
+az acr helm push -n projecenvironment -u projecenvironment -p PASSWORD ms-maestros-sel-chart-1.0.0.tgz --force
+az acr helm push -n projecenvironment -u projecenvironment -p PASSWORD ms-servicio-pagos-sel-chart-1.0.0.tgz --force
+az acr helm push -n projecenvironment -u projecenvironment -p PASSWORDohs-ventas-digitales-chart-1.0.0.tgz --force
+
+
+
+
+#Actualizar los repos de helm
+helm repo update
+
+#uninstall el chart del cluster de AKS
+helm uninstall  ms-api-sel  --namespace=xxx-en-linea
+helm uninstall  ms-maestros-sel  --namespace=xxx-en-linea
+helm uninstall  ms-flujo-negocio-ventas-digitales --namespace=xxx-en-linea
+helm uninstall  ohs-ventas-digitales --namespace=xxx-en-linea
+helm uninstall  ms-servicio-pagos-sel  --namespace=xxx-en-linea
+helm uninstall  ms-servicio-pagos-sel  --namespace=xxx-en-linea
+
+#Instalar el chart en el cluster de aks
+helm upgrade --install --version 1.0.0  ms-api-sel projecenvironment/ms-api-sel-chart --namespace=xxx-en-linea
+helm upgrade --install --version 1.0.0  ms-flujo-negocio-ventas-digitales projecenvironment/ms-flujo-negocio-ventas-digitales-chart --namespace=xxx-en-linea
+helm upgrade --install --version 1.0.0  ms-maestros-sel projecenvironment/ms-maestros-sel-chart --namespace=xxx-en-linea
+helm upgrade --install --version 1.0.0  ohs-ventas-digitales projecenvironment/ohs-ventas-digitales-chart --namespace=xxx-en-linea
+helm upgrade --install --version 1.0.0  ms-servicio-pagos-sel projecenvironment/ms-servicio-pagos-sel-chart --namespace=xxx-en-linea
+
+#Agrega el repo de NGINX para poder configurar el ingress
+helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+
+#Instalar NGINX en el cluster para luego configurar el ingress
+helm install nginx stable/nginx-ingress \
+    --namespace ingress-basic \
+    --set controller.replicaCount=2 \
+    --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
+    --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux
+ 
+#Instalar el ingress dentro del cluster con las reglas de balanceo
+kubectl apply -f xxx-en-linea-ingress.yaml --namespace xxx-en-linea
+
+# kubernetes
+# conectar con un pod 
+kubectl exec -it aks-ssh -- /bin/bash
+
+# contenedor debian
+kubectl run --generator=run-pod/v1 -it --rm aks-ssh --image=debian
+
+#Copiar archivos a contenedor de aks
+kubectl cp <ruta archivo> <nombre-pod>:/<ruta>   aks-transversal-28375719-vmss000000
+
+
+kubectl get event -n soluciones --field-selector involvedObject.name=ohs-perfil-usuario-7b75b877c5-w4zrj
+
+# conectar desde un pod con la llave privada en el al nodo de aks
+ssh -i id_rsa personaslabuser@10.41.205.4
+
+# Ver nodo de kubernetes con ip y mas info detallada
+kubectl get nodes --output wide
+
+#configuracion core dns
+kubectl get configmaps --namespace=kube-system coredns-custom -o yaml
+kubectl apply -f .\configDNS\corednsms.yaml
+kubectl delete pod --namespace kube-system -l k8s-app=kube-dns
+
+# comandos helm
+# login 
+helm registry login ACRNAME.azurecr.io --username bgallego@xxx.com.co --password Noviembre-2020
+
+# crear chart
+helm create mychart
+
+# guardar chart
+helm chart save .\gateway-personas-app-movil  ACRNAME.azurecr.io/helm/gateway-personas-app-movil:1.0.0
+
+# subir chart en el repo de acr
+helm chart push ACRNAME.azurecr.io/helm/ohs-salud:1.0.0
+
+# instalar chart
+helm upgrade --install  ohs-salud .\oh-salud --namespace soluciones
+helm upgrade --install  ohs-salud .\oh-salud --namespace soluciones --debug
+
+docker run -it -p 9090:9090 --name service-gateway gateway
+
+kubectl get services/pod/ingress --namespace=xxx-en-linea
+--dry-run --debug # execution plan
+helm upgrade --install --version 1.0.0  ms-flujo-negocio-ventas-digitales projecenvironment/ms-flujo-negocio-ventas-digitales-chart --namespace=xxx-en-linea --set replicaCount=2
+kubectl describe ingress xxx-en-linea --namespace xxx-en-linea
+
+docker build -t ms-flujo-negocio-ventas-digitales . --build-arg APP_PORT=8080 --build-arg APP_NAME=ms-flujo-negocio-ventas-digitales --build-arg STAGE=develop # el nombre de la app viene del dockerCompose
+az acr login --name projecenvironment
+docker tag ms-flujo-negocio-ventas-digitales projecenvironment.azurecr.io/aplicaciones/msflujonegocioventasdigitales:2.0.0 
+docker push projecenvironment.azurecr.io/aplicaciones/msflujonegocioventasdigitales:2.0.0 
+
+helm install nginx-ingress stable/nginx-ingress --namespace transversal 
+
+
+az role assignment create --assignee <ID> --role "Network Contributor" --scope /subscriptions/SUB/resourceGroups/mc_ecosis_digpersonas_lab_rg_transversal-lab-aks-ecosis-dig-personas_eastus --subscription "SUB"
+
+kubectl create secret docker-registry acrNAMElab001 --docker-server acrNAMElab001.azurecr.io --docker-username acrNAMElab001 --docker-password PASSWORD/bBP --docker-email bgallego@xxx.com.co --namespace soluciones
+
+az aks update -n aks-name-lab-001 -g rg-NAME-lab-001 --attach-acr acrNAMElab001 --subscription "SUBSC"
+
+helm upgrade --install --version 1.0.0  health ACRNAME/health --namespace=transversal
+
+az acr login --name ACRNAME
+
+docker push transversallab.azurecr.io/pruebas/springbootimage:1.0
+
+helm package --version 1.0.0 --app-version=1.0 ./charts/prueba-springboot
+
+az acr helm push -n transversallab --username transversallab --password CeTrnXREr3NUhUmCPn=OoXwq6e53DwAC prueba-springboot-1.0.0.tgz --force
+
+kubectl apply -f ./charts/transversal-ingress.yaml --namespace transversal
+
+helm install ingress-transversal stable/nginx-ingress -f ./charts/transversal-ingress-config.yaml --namespace transversal --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux
+
+helm repo add ACRNAME https://ACRNAME.azurecr.io/helm/v1/repo --username ACRNAME --password PASSWORD
+
+az acr helm push -n ACRNAME -u ACRNAME -p PASSWORD gateway-personas-app-movil-1.0.0.tgz. --force
+helm package ./charts/health
+
+
+keytool -importcert -noprompt -alias COMODOROOT -keystore cacerts -file COMODOROOT.cer -storepass changeit 
+
+*********************************************************************************************************************
+*********************************************************************************************************************

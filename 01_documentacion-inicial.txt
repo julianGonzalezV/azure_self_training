@@ -1,0 +1,116 @@
+https://docs.microsoft.com/es-mx/learn/paths/azure-fundamentals/ (10 horas)
+
+> Un contenedor no requiere de un sistema operativo
+	Empaqueta la solución y todas sus dependencias(app), al no existir sistema operativo sube rápido
+
+
+Requisitos y cumplimiento:
+https://docs.microsoft.com/es-mx/learn/modules/principles-cloud-computing/3a-compliance
+
+
+
+https://docs.microsoft.com/es-mx/learn/modules/principles-cloud-computing/5-types-of-cloud-services (IAAS, PAAS, SAAS)
+
+Estos son solo algunos tipos de servicios que encontrará en Azure:
+
+Los servicios de procesos, como las máquinas virtuales y los contenedores, que pueden ejecutar las aplicaciones.
+Los servicios de base de datos que proporcionan opciones relacionales y NoSQL.
+Los servicios de identidad que facilitarán la autenticación y protección de los usuarios.
+Los servicios de redes que conectan el centro de datos a la nube, proporcionan alta disponibilidad u hospedan el dominio DNS.
+Las soluciones de almacenamiento que pueden hospedar cantidades masivas de datos estructurados y no estructurados.
+Inteligencia artificial y aprendizaje automático pueden analizar datos, texto, imágenes, comprender el habla y hacer predicciones mediante datos, lo que permite el mundo de la agricultura o la salud, entre otros.
+Y mucho más.
+
+
+:::::::OPCIONES DE COMPRA::::::::::
+https://docs.microsoft.com/es-es/learn/modules/create-an-azure-account/2-azure-accounts-and-subscriptions
+
+
+:::::::::FACTURACION:::::::::::::::::::
+https://docs.microsoft.com/es-es/learn/modules/create-an-azure-account/4-multiple-subscriptions
+
+al registrarse se crea una SUSCRIPCION, que su vez se usa para aprovisionar RECURSOS (ejmplo una maquina virtual)
+> Se pueden tener varias suscripciones para separar por ejemplo 
+Entornos (dllo, labo, pdn)
+Estructura organizacional:()
+Por facturacion: Dividi costeo por ambientes por ejemplo
+
+> Se puede tener  una única factura para la organización, pero quiere organizar los cargos por departamento, equipo o proyecto.
+
+:::::::::::SOPORTE TÉCNICO:::::::::::::::::
+https://docs.microsoft.com/es-es/learn/modules/create-an-azure-account/5-support-options
+
+El plan Professional Direct trae de todo :) hasta a aceso a un grupo de expertos técnicos 
+El plan developer le responde a uno en 1 día
+Tambien muestra la comunidad Azure 
+
+Resumen facturacion
+https://docs.microsoft.com/es-es/learn/modules/create-an-azure-account/7-summary
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::Services:::::::::::::::::::::::::::
+https://docs.microsoft.com/es-es/learn/modules/welcome-to-azure/3-tour-of-azure-services:
+
+Compute Services:
+Virtual mahines, container and serverless
+
+Cloud Storage:Disk attached to virtual machines
+
+Networking feature : Private Networks
+
+App Host: Lets us run our entie application on a managed platform(Windows or Linux)
+
+AI(Artificial Intelligence): ML and prebuilt cognitive services 
+
+IoT(Internet Of Things): Azure enables us to integrate devices, sensors 
+ 
+Integration: Service Bus 
+
+Azure DevOps Services (anteriormente conocido como Visual Studio Team Services o VSTS)
+:::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
+:::::::::::https://docs.microsoft.com/es-es/learn/modules/welcome-to-azure/4-exercise-create-website:::::::::::::::::
+App Service: Servicio que permite desplegar app webs y back-ends (java .net, .netcore, python)
+
+Ojo uno puede configurar el plan: Ejemplo de prueba(SELECCIONE UNO GRATIS):
+Inicio>Nuevos>WordPress>WordPress>Plan de App Service>Nuevo plan de App Service>Selector de 
+
+:::::::::::::::::https://docs.microsoft.com/es-es/learn/modules/welcome-to-azure/5-exercise-configure-app-service
+
+:::::::::::::::::https://docs.microsoft.com/es-es/learn/modules/welcome-to-azure/6-exercise-cloud-shell --¿Qué es Azure Cloud Shell?
+comandos:
+az account list --output table (listar las suscripciones)
+az group list (listar los grupos de recursos) en formato json
+az group list --output table (listar los grupos de recursos) en formato tabla
+az resource list (lista de los recursos)
+
+Recursos orientados a un sitio web:
+az resource list \
+    --resource-group RESOURGROUPNAME \
+    --resource-type Microsoft.Web/sites --output table
+	
+En la parte "Microsoft.Web/sites" del comando , se le indica/filtra los recurtos de Tipo = Sitio Web
+
+Ejemplo de salida:
+app-eg01  RESOURGROUPNAME  centralus   Microsoft.Web/sites  --LA primera columna es el name del aplicativo
+
+para el caso de la práctica la url del sitio es =    http://app-eg01.azurewebsites.net/wp-admin/install.php   
+
+::::::Stop y Start de nuesto aplicativo::::::::
+az webapp stop \
+    --resource-group RESOURGROUPNAME \
+    --name <web app name> en este caso app-eg01
+	
+az webapp start \
+    --resource-group RESOURGROUPNAME \
+    --name <web app name> en este caso app-eg01
+	
+	
+	
+Comparativo AWS - AZURE:
+https://docs.microsoft.com/es-es/azure/architecture/aws-professional/services
+
+
+ 

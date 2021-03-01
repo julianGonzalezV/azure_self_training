@@ -1,0 +1,157 @@
+https://azure.microsoft.com/mediahandler/files/resourcefiles/kubernetes-learning-path/Kubernetes%20Learning%20Path%20version%201.0.pdf
+
+Repo super bacano:
+https://github.com/robece/microservices-aks
+
+
+::Glosario:::
+> Subscription: Imagine Azure subscriptions to be like a pre-paid SIM activation with or without credit
+> Helm (https://helm.sh/):
+es un administrador de paquetes para Kubernetes que permite a los desarrolladores y operadores configurar e implementar 
+de forma más sencilla aplicaciones y servicios en clústeres de Kubernetes.
+> Kubernetes Service: https://kubernetes.io/docs/concepts/services-networking/service/ (It has a set of Pods)
+> ACR: Azure Container Registry
+> kubectl: 
+
+1- https://docs.microsoft.com/en-us/azure/aks/intro-kubernetes
+se usa para desplegar app basados en kubernetes
+Aks es free solo se paga por los nodos en el cluster no por los MASTERS
+sE PUEDE HACER UPGRADE de las versiones de kubernetes a medida que vayan saliendo nuevas versiones 
+
+
+
+2- https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough
+
+open azur portal: https://portal.azure.com/#home o 
+comandos:
+az --version --> esto no será problema si se usa el shell de azure sin instalar en el local. ya que en teoría están siempre en la ultima versión
+¡¡¡If running the commands in this quickstart locally (instead of Azure Cloud Shell), ensure you run the commands as administrator!!!
+
+1)
+$az group create --name ventasDigitales --location eastus
+para el ejemplo retorna 
+{
+  "id": "/subscriptions/74549a7d-42d2-4b1d-ac9a-c8f1a4e47489/resourceGroups/ventasDigitales",
+  "location": "eastus",
+  "managedBy": null,
+  "name": "ventasDigitales",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": null,
+  "type": "Microsoft.Resources/resourceGroups"
+}
+
+2) Create azure container registry
+az acr create -n $ACRName -g $ACRResourceGroupName --sku Standard
+en el ejemplo sería
+az acr create -n ventasDigitalesACRName -g ventasDigitales --sku Standard
+Salida del comando:
+{
+  "adminUserEnabled": false,
+  "creationDate": "2020-02-12T00:18:11.190467+00:00",
+  "id": "/subscriptions/74549a7d-42d2-4b1d-ac9a-c8f1a4e47489/resourceGroups/ventasDigitales/providers/Microsoft.ContainerRegistry/registries/ventasDigitalesACRName",
+  "location": "eastus",
+  "loginServer": "ventasdigitalesacrname.azurecr.io",
+  "name": "ventasDigitalesACRName",
+  "networkRuleSet": null,
+  "policies": {
+    "quarantinePolicy": {
+      "status": "disabled"
+    },
+    "retentionPolicy": {
+      "days": 7,
+      "lastUpdatedTime": "2020-02-12T00:18:11.862729+00:00",
+      "status": "disabled"
+    },
+    "trustPolicy": {
+      "status": "disabled",
+      "type": "Notary"
+    }
+  },
+  "provisioningState": "Succeeded",
+  "resourceGroup": "ventasDigitales",
+  "sku": {
+    "name": "Standard",
+    "tier": "Standard"
+  },
+  "status": null,
+  "storageAccount": null,
+  "tags": {},
+  "type": "Microsoft.ContainerRegistry/registries"
+}
+
+Then activate 
+az acr update -n ventasDigitalesACRName --admin-enabled true
+To search ACr information like ACR name and passwprd
+Salida del comando: (note los cambios en el JSON por ejemplo "adminUserEnabled": false,)
+{
+  "adminUserEnabled": true,
+  "creationDate": "2020-02-12T00:18:11.190467+00:00",
+  "id": "/subscriptions/74549a7d-42d2-4b1d-ac9a-c8f1a4e47489/resourceGroups/ventasDigitales/providers/Microsoft.ContainerRegistry/registries/ventasDigitalesACRName",
+  "location": "eastus",
+  "loginServer": "ventasdigitalesacrname.azurecr.io",
+  "name": "ventasDigitalesACRName",
+  "networkRuleSet": null,
+  "policies": {
+    "quarantinePolicy": {
+      "status": "disabled"
+    },
+    "retentionPolicy": {
+      "days": 7,
+      "lastUpdatedTime": "2020-02-12T00:18:11.862729+00:00",
+      "status": "disabled"
+    },
+    "trustPolicy": {
+      "status": "disabled",
+      "type": "Notary"
+    }
+  },
+  "provisioningState": "Succeeded",
+  "resourceGroup": "ventasDigitales",
+  "sku": {
+    "name": "Standard",
+    "tier": "Standard"
+  },
+  "status": null,
+  "storageAccount": null,
+  "tags": {},
+  "type": "Microsoft.ContainerRegistry/registries"
+}
+
+
+Get ACR Name And Password
+Name: $az acr credential show -n ventasDigitalesACRName -g ventasDigitales --query username -o tsv
+	Result: ventasDigitalesACRName
+Password: $ az acr credential show -n ventasDigitalesACRName -g ventasDigitales --query passwords[0].value -o tsv
+	Result/ E5Aw60RmK+mHBx3uIq+S9uXIq7ezjrbX
+create AKS Cluster, 
+az aks create --resource-group myResourceGroup --name myAKSCluster --node-count 1 --enable-addons monitoring --generate-ssh-keys
+para el caso de prueba es:
+az aks create --resource-group ventasDigitales --name vDigitalesCl --node-count 1 --enable-addons monitoring --generate-ssh-keys
+
+NOTA:el aks create no funcionó, en su lugar los comandos del repo https://github.com/robece/microservices-aks si funciona, a continuación los comandos 
+discriminados uno a uno (en el repo https://github.com/robece/microservices-aks está todo en un shell script), los scrips son:
+:::::::::::::::::::::::::
+Acá se usa el mismo nombre del cluster
+ az ad sp create-for-rbac -n $AKSClusterName----(sp de service principal)
+ Para el ejemplo sería : 
+ rbac: Role based access control to define who can access o azure resources and what they can do
+ $ az ad sp create-for-rbac -n vDigitales 
+ Service Principal: Manage Azure Active Directory service principals for automation authentication
+ 
+ Get AKSClusterServicePrincipalAppId;
+ az ad sp list --display-name $AKSClusterName --query "[].appId" -o tsv
+:::::::::::::::::::::::::
+
+
+Preguntas kubernetes:
+Container: an executable image that contains software and its dependencies, it used to be managed by a POD that contains the set up for run this container.
+Diferencia enre nodo y pods? Un pod ES una unidad de ejecución que corre en un nodo y representa la configuracion para correr un solo container 
+Un nodo es una maquina virtual o fisica y puede tener varios pods, que son ejecutados coomo servicios en un nodo 
+
+Cuál es el alcance de un cluster? por area equipo eg ventasDigitales, por proyecto(saludDigital)?
+Dado que el cluster contiene varios containers entonces lo orientaré para este ejemplo por área de tecnología en este caso ventasDigitales
+
+
+https://docs.microsoft.com/bs-latn-ba/azure/aks/ PASO A PASO

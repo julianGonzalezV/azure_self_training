@@ -1,0 +1,187 @@
+********************************************************************
+El siguiente ejemplo muetra la secuencia de comandos ejecutatos 
+para desplegar un componente BackEnd en AZURE AKS , en ambiente
+DLLO  
+Siga los mismos pasos para otro AMBIENTE 
+********************************************************************
+
+
+Cree el archivo docker file:
+Ejemplo para un proyecto llamado ohs-notificacion :) 
+***********************************
+FROM amazoncorretto:8
+COPY build/libs/ohs-notificacion-*-all.jar ohs-notificacion.jar
+EXPOSE 8080
+CMD java -Dcom.sun.management.jmxremote -noverify ${JAVA_OPTS} -jar ohs-notificacion.jar
+
+***********************************
+1) Hacer build de la imagen
+#-t es para etiquetar la imagen, indicando el nombre/url(que a la final es un nombre)  del repositorio(remoto o local ) y el tag --forma -t repoName:tag 
+# usaremos dllo para la POC
+
+#Dllo
+docker build -t acrNAMEdllo001.azurecr.io/aplicaciones/ohs-salud-notificacion:1.0.0 .
+
+#Lab:
+docker build -t acrNAMElab001.azurecr.io/aplicaciones/ohs-salud-notificacion:1.0.0 .
+
+
+2) Verificar creacion de la imagen 
+$ docker image ls 
+
+3) Hacerle Push del LOCAL al ACR azure
+************************************************
+ 
+por defecto la primera cuenta con que se loguee es seleccionada (cuando haga az login)
+Si desea cambiarla:
+VER suscripciones
+$ az account list --output table
+
+Salida:
+Name                           CloudName    SubscriptionId                        State    IsDefault
+-----------------------------  -----------  ------------------------------------  -------  -----------
+NAME-dll  AzureCloud   3183f5a2-9f04-45a7-b8bd-81b35c10352b  Enabled  True
+Seguros generales              AzureCloud   SUB  Enabled  False
+NAME-lab  AzureCloud   SUBSC  Enabled  False
+
+
+NOTE como aparece en True en  la COLUMNA IsDefault, indicando cuál es el la subscripcion en la que estamos 
+
+
+Switch to an specific subscription
+$ az account set --subscription "My Demos"-->(subscription name )
+eg:
+DLLO:
+az account set --subscription NAME-dll
+
+
+LAB
+az account set --subscription NAME-lab
+confirme de nuevo con 
+$ az account list --output table
+
+
+o si no hace Switch se pueder hacer Run SINGLE command on specific subscription--(not reccommended)
+az vm create --subscription "My Demos" --resource-group MyGroup --name NewVM --image Ubuntu
+************************************************
+
+3.1) 
+- Si no ha hecho login al ACR en az entonces ejecute el sgte comando de acuerdo al ambiente deseado
+Dllo
+$ az acr login -n acrNAMEdllo001
+
+Labo:
+$ az acr login -n acrNAMElab001
+
+Luego 
+3.2) 
+Dllo
+$ docker push acrNAMEdllo001.azurecr.io/aplicaciones/ohs-salud-notificacion:1.0.0 (Note la version)
+
+Lab
+$ docker push acrNAMElab001.azurecr.io/aplicaciones/ohs-salud-notificacion:1.0.0 
+
+Si no se loguea entonces el siguiente error aparecerá 
+************************************************
+The push refers to repository [acrNAMEdllo001.azurecr.io/aplicaciones/ohs-salud-notificacion]
+42a1342605ed: Preparing
+74821d83b3fd: Preparing
+50c3cd231426: Preparing
+unauthorized: authentication required, visit https://aka.ms/acr/authorization for more information.
+************************************************
+
+	
+	
+5) Listar los repositorios en un acr de azure  específico (o por consola ver imagen 08_ACR_PUSHED)
+Dllo
+$ az acr repository list -n acrNAMEdllo001
+
+Labo
+$ az acr repository list -n acrNAMElab001
+
+Salida:
+[
+  "api-gateway-personas-app-movil",
+  "aplicaciones/ohs-salud-notificacion",
+  "ohs-salud"
+]
+
+
+************************************************IAC - Terraform***********************************************
+Repo:git clone https://juligove@bitbucket.org/segurosxxxcolombia/iac_ecosistema_digital_personas_azure.git
+En este repo se encuentra el todo lo relacionado con Infrastructure As Code (IaC) del ecosistema-digital-personas
+Se usa para provisionar arquitectura que se vaya necesitando, por ejemplo se usa si ud requiere nueva infra azure para temas de Front, back etc 
+Los componentes que se aprovisionan son:
+
+usando Terraform como herramienta para ello
+HACERLE ZOOM
+Están Haciendo uso de workspaces de terraform? R/ branches
+Manejo centralizado del tfstate?R/ No
+
+
+
+A DIFERENCIA del proyecto despliegue que lo que hace es deplegar los binarios sobre esa infra aprovisionada con IaC
+
+**************************************************************************************************************
+
+************************************************DEPLOYMENTS***************************************************
+Repo: git clone https://juligove@bitbucket.org/segurosxxxcolombia/despliegue-ecosistema-digital-personas.git
+ver imagenes 09  y 10_deployment.png
+Proyectos para despiegues : Preguntar a Brian par qué lo usa?R/ Es para el tema de crear deployments y services de Kubernetes 
+y desplegar los binarios generados
+
+En este repo se encuentran los archivos .YML que indican el despliegue de los siguientes objetos de Kubernetes:
+
+6) (Por cada proyecto tome copia de uno ya existente y modifique los archivos a su nececidad)--ver imagen 10_DEPLOYMENT.PNG
+
+-Deployment.yml
+Acá configure las variables de entorno 
+
+-Ingress.yml
+-Service.yml: El que expone los nodos
+Además de scripts (.sh) para correr con el fin de que ???R/ se desconce para que sirve 
+**************************************************************************************************************
+
+
+Si no ejecuta el paso 7 y va al 8 obtendrá ERROR de no tener cluster para ejecutar el script
+
+
+7) Logearse al cluster AKS
+DLLO:
+az aks get-credentials -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscription "3183f5a2-9f04-45a7-b8bd-81b35c10352b" 
+
+
+LAB:
+az aks get-credentials -n aks-name-lab-001 --resource-group rg-NAME-lab-001 --subscription "SUBSC" 
+
+	$kubectl config view 
+
+az aks browse -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscription "3183f5a2-9f04-45a7-b8bd-81b35c10352b"
+
+8)Crear el Service
+ kubectl create -f ohs-salud-notificacion/service.yml
+	Para ELIMINAR el service:
+	$ kubectl delete -f ohs-salud-notificacion/service.yml
+
+
+
+9) Para crear el Deployment ---->  Contiene el POD, la iamen desde donde se creará el POD, variables de entorno
+	$kubectl create -f ohs-salud-notificacion/deployment.yml
+	Para ELIMINAR el despliegue:
+	$ kubectl delete -f ohs-salud-notificacion/deployment.yml
+	
+10)
+----PARA CONSTATAR LA CREACIÓN DE LOS COMPONENETES EJECUTE EL COMANDO QUE PERMITE HACER el BROWSE de éste para abrir consola administrativa
+Nota: Si pide seleccionar modo de acceso vea 11_AKS_BROWSE.png y 12_AKS_BROWSE.png
+DLLO:
+az aks browse -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscription "3183f5a2-9f04-45a7-b8bd-81b35c10352b"
+
+LAB:
+az aks browse --name aks-name-lab-001 --resource-group rg-NAME-lab-001 --subscription "SUBSC"
+
+PDN:
+az aks browse --name aks-name-pdn-001 --resource-group rg-NAME-pdn-001 --subscription "79b69f2a-91e4-426a-b1eb-3a59fd3dd310"
+
+
+13_deployment_error.PNG Error cuando se apunta a la imagen incorrecta desde el deployment
+

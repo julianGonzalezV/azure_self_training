@@ -1,0 +1,23 @@
+Region: área geografica del planeta con a lmenos un centro de datos , esto le apunta a la redución del LATENCY en las peticiones que por ejemplo las hacen desde otras
+ciudades, paises
+Las regiones se utilizan para identificar la ubicación de los recursos
+
+aks
+cdn : Despliegue 
+data storage 
+
+https://docs.microsoft.com/es-es/learn/modules/explore-azure-infrastructure/3-geographies::::::::::
+La zonas geográficas se dividen en las siguientes áreas:
+
+América
+Europa
+Asia Pacífico
+Oriente Medio y África
+
+https://docs.microsoft.com/es-es/learn/modules/explore-azure-infrastructure/4-availability-zones
+
+Si quiere usar zonas de disponibilidad para ejecutar aplicaciones críticas y conseguir una alta disponibilidad en la arquitectura de sus aplicaciones, 
+coloque sus recursos de proceso, almacenamiento, red y datos dentro de una zona y replíquelos en otras. Tenga en cuenta que la duplicación de los servicios 
+y la transferencia de datos entre zonas podrían suponer un costo.
+
+https://docs.microsoft.com/es-es/learn/modules/explore-azure-infrastructure/5-region-pairs

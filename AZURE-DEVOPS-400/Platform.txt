@@ -1,0 +1,59 @@
+dev.azure.com---signing or signup
+con mi gmail me redireccion a jandres20870178--que es la organizacion de la que soy owner 
+startFree
+
+Es necesario tener un proyecto inicial en una organizacion 
+
+Azure demo generations:
+Ejemplos que ya vienen preconfigurados:
+https://azuredevopsdemogenerator.azurewebsites.net/
+
+Recursos
+https://www.youtube.com/watch?v=KccK6-P8sl8&list=PLU3UD_RM_1AZLs5iiopDXeEZQGOINWgoa&index=1
+https://www.youtube.com/watch?v=zPu9a3GCsM0&list=PLU3UD_RM_1AZLs5iiopDXeEZQGOINWgoa&index=2
+https://www.youtube.com/watch?v=lwAb-uzGSD0&list=PLU3UD_RM_1AZLs5iiopDXeEZQGOINWgoa&index=3
+https://www.youtube.com/watch?v=KccK6-P8sl8&list=PLU3UD_RM_1AZLs5iiopDXeEZQGOINWgoa&index=4
+::::::::::::::::::::Dashboards::::::::::::::::::::
+Puede tener Charts de visualizacoin general para la gestión del trabajo , mis tareas asignadas , burndown etc 
+graficas acerca de la compilación---> incluso tiene para extensiones 
+
+
+::::::::::::::::::::Wiki::::::::::::::::::::
+Para documentar caráteristicas importantes del proyecto 
+
+::::::::::::::::::::Boards - panel::::::::::::::::::::
+https://www.youtube.com/watch?v=lwAb-uzGSD0&list=PLU3UD_RM_1AZLs5iiopDXeEZQGOINWgoa&index=3
+
+Permite realizar el ALM(-application-lifecycle-managemen)delproyecto  : Gestion de todos los flujos--tetst, sprints, integración, despliegues...ciclo entero lo podemos controlar desde boards
+
+Elementos:
+
+	-WorkItem:(el listado está a propósito en orden jerarquico)
+		Puede ser un 
+		Epic: Funcion completa : crear componenete de gestion de usuarios
+		Feature: Las caratacteristicas a desarrollar eg Crear Login page, o crear Signup Page, integracion x
+		Producto backlogItem: Son como las tareas eg crear controlador, desarrollo proyecto base
+		bug, task, , feautre, 
+		Task: por cada Product baclog Item tiene varias task eg: Crear clase, crear método de obteneter pago, ---> tareas concretas 
+		intentar sacar tareas que se puedan sacar en 1 día :) ..ese es el nivel que se recomdienda o INCLUSO MENOS
+	
+	-Boards:Panel que se puede filtrar pr Epic, Feature , etc Y ASÍ poder ver el estado del trabajo que se está realizando cuanto en To Do? In progress? Done? 
+	Vista de baclog: Todo lo que queda por hacer
+	
+	-Backlog: PBIs(product backlog items), los por hacer, hechos 
+		Permite ver charts y analitica de como vamos
+	
+	-Sprints
+		trabajo actual, permite acabarlo, retrospectiva, crear un nuevo sprint 
+		
+::::::::::::::::::::Más 0Boards - panel::::::::::::::::::::		
+https://www.youtube.com/watch?v=KccK6-P8sl8&list=PLU3UD_RM_1AZLs5iiopDXeEZQGOINWgoa&index=4
+
+Se puede añadir colaboradores
+
+
+
+
+
+
+		

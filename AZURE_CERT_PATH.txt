@@ -1,0 +1,49 @@
+path arquitecto:
+network, storage , security 
+az administrator
+understand az development and devops processes
+
+link well explained:
+https://docs.microsoft.com/en-us/learn/certifications/exams/az-303?tab=tab-learning-paths (inlude free path)
+
+
+
+
+AZURE FUNDAMENTALS
+https://docs.microsoft.com/en-us/learn/certifications/exams/az-900
+
+Azure devops engineer
+azure administrator - az-104
+
+azure administrator - az-104
+az-developer(az-204)>>az devops( AZ-400) >> 
+
+
+AZ-120
+AZ-400
+AZ-301
+AZ-304
+
+Escribir un artículo :) 
+
+Developer:
+Preparaciión
+https://endjin.com/blog/2020/07/how-to-prepare-for-exam-az-204-developing-solutions-for-microsoft-azure
+https://docs.microsoft.com/en-us/learn/certifications/exams/az-204
+
+Devops:
+https://docs.microsoft.com/en-us/learn/paths/az-400-develop-instrumentation-strategy/
+Preparation:
+https://techcommunity.microsoft.com/t5/azure/how-i-prepared-for-the-az-400-exam/m-p/1647876
+(https://www.whizlabs.com/blog/az-400-exam-preparation/)
+
+
+
+
+
+
+Se recomineda primero pasar por az-103 o 203(reemplazado por 204)
+
+
+
+https://docs.microsoft.com/en-us/learn/certifications/exams/az-303?tab=tab-learning-paths --(unavez hecho el de deps,admon, devops, lanzarse al de arquitect 303 y 304 )

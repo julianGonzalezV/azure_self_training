@@ -1,0 +1,39 @@
+azure developer az-204 :
+
+https://docs.microsoft.com/en-us/learn/modules/choose-azure-service-to-integrate-and-automate-business-processes/2-identify-technology-options
+
+
+ four different technologies that you can use to build and implement workflows that integrate multiple systems:
+Nota: -verificar costos por TX sobretodo cuando ya son miles o millones (ejemplo un sitio que ya es un referente en el mercado)
+Logic Apps--
+Microsoft Power Automate
+WebJobs
+Azure Functions
+
+NOTA: No solo por facilidad de escogen las functions(lambdas en aws),por ejemplo en azure si es accedida por miles de cliente piense mejor en una vm, aks ...
+se debe revisar los límites de los disparadores(triggers) de la function
+
+el timeout de procesamiento(tiempo en que se tarda enejcutando x tarea) la function es de 5mins pero puede subir a 10
+el timeout de respuest
+
+planes:
+ 
+ Consumption service plan--> más comun 
+ Azure App Service plan: mantiene la function corriendo continuamente sobre una VM--> practicamente ya no es un serverless plan--
+	cuando requiero poder de procesamiento 
+	mayor tiempo de ejecución---> acá compararlo con un AKS por ejemplo 
+	
+
+When you create a function app, it must be linked to a storage accoun
+
+Opciones para disparar una function:
+Service	Trigger description
+Blob storage	Starts a function when a new or updated blob is detected.
+Azure Cosmos DB	Start a function when inserts and updates are detected.
+Event Grid	Starts a function when an event is received from Event Grid.
+HTTP	Starts a function with an HTTP request.
+Microsoft Graph Events	Starts a function in response to an incoming webhook from the Microsoft Graph. Each instance of this trigger can react to one Microsoft Graph resource type.
+Queue storage	Starts a function when a new item is received on a queue. The queue message is provided as input to the function.
+Service Bus	Starts a function in response to messages from a Service Bus queue.
+Timer	Starts a function on a schedule.
+

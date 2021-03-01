@@ -1,0 +1,12 @@
+https://kubernetes.io/docs/tutorials/kubernetes-basics/
+
+acá aprenderá que son:
+mater: Managing the cluster(scheduling, maintainin, scaling and rolling out/deploy applications)
+nodos: (VM, physical pc)--https://kubernetes.io/docs/tutorials/kubernetes-basics/explore/explore-intro/
+	The nodes communicate with the master using the Kubernetes API, which the master exposes. 
+	End users can also use the Kubernetes API directly to interact with the cluster.
+	> A node can have multiples PODS
+Kubelet: agent to manage the node and comunicate this node with the master
+pods:  a Kubernetes abstraction that represents a group of one or more application containers(docker or rkt[roket])
+> they include shared storage (volumes), IP address and information about how to run them.
+

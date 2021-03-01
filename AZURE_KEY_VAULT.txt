@@ -1,0 +1,274 @@
+    
+	# variables
+
+KeyVaultClientSecretPassword="33CD7FE44B9BD2070EF8356F069A464!"
+KeyVaultAccountName="eco-digital-vault"
+KeyVaultResourceGroupName="ecoDigitalGr" #mismo nombre de GR qu cree en AKS_PERSONAL.txt
+KeyVaultCertificateName="eco-digital-vault-cer"
+KeyVaultApplicationAppId="eco-digital-vault-api-id"
+KeyVaultEncryptionKey="88CD7FE44B9BD2070EF8356F069A4647"
+	
+	
+	# create service principal to key vault
+    az ad sp create-for-rbac -n $KeyVaultAccountName
+	out:
+	{
+  "appId": "19729af0-6709-4da4-bdbd-c1e10f8a1e2c",
+  "displayName": "eco-digital-vault",
+  "name": "http://eco-digital-vault",
+  "password": "2bde08ca-5564-44f0-a123-6ef68974db7d",
+  "tenant": "8673c70e-96ae-4295-bcef-ca5d562e12cc"
+}
+
+    # get service principal id, se reescribe la variable con el valor real
+    KeyVaultApplicationAppId=$(az ad sp list --display-name $KeyVaultAccountName --query "[].appId" -o tsv)
+ 
+    # update the AAD application
+    az ad app update --id $KeyVaultApplicationAppId --reply-urls "http://localhost" --credential-description "CLIENT_SECRET" --password $KeyVaultClientSecretPassword --oauth2-allow-implicit-flow false
+
+    # create key vault account, debe esperar unos minutos
+    az keyvault create --name $KeyVaultAccountName --resource-group $KeyVaultResourceGroupName --sku standard
+	output:
+	{
+  "id": "/subscriptions/0f3b6480-7d93-4d87-a9a0-318d7928067f/resourceGroups/ecoDigitalGr/providers/Microsoft.KeyVault/vaults/eco-digital-vault",
+  "location": "eastus",
+  "name": "eco-digital-vault",
+  "properties": {
+    "accessPolicies": [
+      {
+        "applicationId": null,
+        "objectId": "637aad7c-e0ee-4a55-bb0a-9dc06c3f3e74",
+        "permissions": {
+          "certificates": [
+            "get",
+            "list",
+            "delete",
+            "create",
+            "import",
+            "update",
+            "managecontacts",
+            "getissuers",
+            "listissuers",
+            "setissuers",
+            "deleteissuers",
+            "manageissuers",
+            "recover"
+          ],
+          "keys": [
+            "get",
+            "create",
+            "delete",
+            "list",
+            "update",
+            "import",
+            "backup",
+            "restore",
+            "recover"
+          ],
+          "secrets": [
+            "get",
+            "list",
+            "set",
+            "delete",
+            "backup",
+            "restore",
+            "recover"
+          ],
+          "storage": [
+            "get",
+            "list",
+            "delete",
+            "set",
+            "update",
+            "regeneratekey",
+            "setsas",
+            "listsas",
+            "getsas",
+            "deletesas"
+          ]
+        },
+        "tenantId": "8673c70e-96ae-4295-bcef-ca5d562e12cc"
+      }
+    ],
+    "createMode": null,
+    "enablePurgeProtection": null,
+    "enableSoftDelete": null,
+    "enabledForDeployment": false,
+    "enabledForDiskEncryption": null,
+    "enabledForTemplateDeployment": null,
+    "networkAcls": null,
+    "provisioningState": "Succeeded",
+    "sku": {
+      "name": "standard"
+    },
+    "tenantId": "8673c70e-96ae-4295-bcef-ca5d562e12cc",
+    "vaultUri": "https://eco-digital-vault.vault.azure.net/"
+  },
+  "resourceGroup": "ecoDigitalGr",
+  "tags": {},
+  "type": "Microsoft.KeyVault/vaults"
+}
+    
+    # adding secret for encryption
+    az keyvault secret set --name "ENCRYPTION-KEY" --vault-name $KeyVaultAccountName --value $KeyVaultEncryptionKey
+output:
+{
+  "attributes": {
+    "created": "2020-02-14T23:40:04+00:00",
+    "enabled": true,
+    "expires": null,
+    "notBefore": null,
+    "recoverableDays": 0,
+    "recoveryLevel": "Purgeable",
+    "updated": "2020-02-14T23:40:04+00:00"
+  },
+  "contentType": null,
+  "id": "https://eco-digital-vault.vault.azure.net/secrets/ENCRYPTION-KEY/4ec645f6f9ab463f8db74d2c5070005e",
+  "kid": null,
+  "managed": null,
+  "tags": {
+    "file-encoding": "utf-8"
+  },
+  "value": "88CD7FE44B9BD2070EF8356F069A4647"
+}
+
+
+    # add key vault certificate, reesribiendo variable
+    KeyVaultCertificateName=$KeyVaultAccountName"-cert"
+
+    # create a Key Vault certificate
+    az keyvault certificate create --vault-name $KeyVaultAccountName --name $KeyVaultCertificateName  -p "$(az keyvault certificate get-default-policy)"
+output:
+{
+  "cancellationRequested": false,
+  "csr": "MIICrjCCAZYCAQAwHjEcMBoGA1UEAxMTQ0xJR2V0RGVmYXVsdFBvbGljeTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALj6XRP9eLO1Fyqbzupr/t+6zcheOxZvTseYHTMCvHBG4HKFq0lsZucqQRlhLCu/k/rXYvWP2SmshYKl+tmOvDKerCj6SwP4IsB4I6dxADMr8V/EbaDIazUbCmrjZCMlzq+OQQJbLAkKXWH1nOTalOR0+BSd+Bl564/jcQLYpnT6q4TOgnwWhuqKHxiCcLkdXAeyukGOh60EAxzz46J/zVNSI09zC2kCsJkHiE6fxIKZYRVq3VtpD19/jhQNXQTiQoNEgAE87Jn0YfpUwPY6jSPK+iLF9AdIkNCwfAWiXwtfkWY1DlL93Rqc/Pto8EDx8OAQRP9TQXGF+t4Z5vYg5DkCAwEAAaBLMEkGCSqGSIb3DQEJDjE8MDowDgYDVR0PAQH/BAQDAgG+MB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAJBgNVHRMEAjAAMA0GCSqGSIb3DQEBCwUAA4IBAQBokaWl0ZFawniccxrsxhq0xj8vWdV7g+ZsaSoT4Lrh6HOckFa2CQP/+l9fzbcWmpEw+a7hrgsfcb5GEal/2sUV3HMWRBBzCM03b/N5QSi5n/NKbQVytZBsVZV8J7DUVDj4seN9E+Vu2I9EyY6aC43ElJ6m+y1yXcAOHgNtz1ceQr12TzLq+cfi3Nb8AWRIxfdEjzQXnfyL2WhEI1HD3Fz3WOL5TX1Q2Nz8/+nU/qskEcb1YkfsWCwUlZl+Yvgx96daZ7nnSZVZYbWxUJKfQpfR6Ng1jXB+dKbj3sHAcPOPXnMf4jlkFP19t/kEHPRgOPQ9ypBuoIJ24qIytZl8RZaG",
+  "error": null,
+  "id": "https://eco-digital-vault.vault.azure.net/certificates/eco-digital-vault-cert/pending",
+  "issuerParameters": {
+    "certificateTransparency": null,
+    "certificateType": null,
+    "name": "Self"
+  },
+  "requestId": "4163acf9a31f4a5c9e6e4a768b98695f",
+  "status": "completed",
+  "statusDetails": null,
+  "target": "https://eco-digital-vault.vault.azure.net/certificates/eco-digital-vault-cert"
+}
+    # add policy to Key Vault account
+    az keyvault set-policy --name $KeyVaultAccountName --spn $KeyVaultApplicationAppId --secret-permissions get list set delete recover backup restore
+output:
+	{
+  "id": "/subscriptions/0f3b6480-7d93-4d87-a9a0-318d7928067f/resourceGroups/ecoDigitalGr/providers/Microsoft.KeyVault/vaults/eco-digital-vault",
+  "location": "eastus",
+  "name": "eco-digital-vault",
+  "properties": {
+    "accessPolicies": [
+      {
+        "applicationId": null,
+        "objectId": "637aad7c-e0ee-4a55-bb0a-9dc06c3f3e74",
+        "permissions": {
+          "certificates": [
+            "get",
+            "list",
+            "delete",
+            "create",
+            "import",
+            "update",
+            "managecontacts",
+            "getissuers",
+            "listissuers",
+            "setissuers",
+            "deleteissuers",
+            "manageissuers",
+            "recover"
+          ],
+          "keys": [
+            "get",
+            "create",
+            "delete",
+            "list",
+            "update",
+            "import",
+            "backup",
+            "restore",
+            "recover"
+          ],
+          "secrets": [
+            "get",
+            "list",
+            "set",
+            "delete",
+            "backup",
+            "restore",
+            "recover"
+          ],
+          "storage": [
+            "get",
+            "list",
+            "delete",
+            "set",
+            "update",
+            "regeneratekey",
+            "setsas",
+            "listsas",
+            "getsas",
+            "deletesas"
+          ]
+        },
+        "tenantId": "8673c70e-96ae-4295-bcef-ca5d562e12cc"
+      },
+      {
+        "applicationId": null,
+        "objectId": "2584bbe9-b311-4f5c-9f34-bd040e6b2042",
+        "permissions": {
+          "certificates": null,
+          "keys": null,
+          "secrets": [
+            "get",
+            "list",
+            "set",
+            "delete",
+            "recover",
+            "backup",
+            "restore"
+          ],
+          "storage": null
+        },
+        "tenantId": "8673c70e-96ae-4295-bcef-ca5d562e12cc"
+      }
+    ],
+    "createMode": null,
+    "enablePurgeProtection": null,
+    "enableSoftDelete": null,
+    "enabledForDeployment": false,
+    "enabledForDiskEncryption": null,
+    "enabledForTemplateDeployment": null,
+    "networkAcls": null,
+    "provisioningState": "Succeeded",
+    "sku": {
+      "name": "standard"
+    },
+    "tenantId": "8673c70e-96ae-4295-bcef-ca5d562e12cc",
+    "vaultUri": "https://eco-digital-vault.vault.azure.net/"
+  },
+  "resourceGroup": "ecoDigitalGr",
+  "tags": {},
+  "type": "Microsoft.KeyVault/vaults"
+}
+
+
+
+al final se requiere:
+   echo ""
+    echo "****************************CALL TO ACTION****************************"
+    echo ""
+    echo Take note of the KeyVaultCertificateName: eco-digital-vault-cert
+	Take note of the KeyVaultClientId: 19729af0-6709-4da4-bdbd-c1e10f8a1e2c
+	Take note of the KeyVaultClientSecret: 33CD7FE44B9BD2070EF8356F069A464!
+	Take note of the KeyVaultIdentifier: https://eco-digital-vault.vault.azure.net
+    echo "Take note of the KeyVaultEncryptionKey: ENCRYPTION-KEY"
+    echo ""
+    echo "****************************CALL TO ACTION****************************"
+    echo ""
+	
+	

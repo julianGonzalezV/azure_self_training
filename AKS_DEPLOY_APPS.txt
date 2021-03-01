@@ -1,0 +1,5 @@
+PREVIOUS READING TO THIS:
+AKS_AZURE - AKS_PERSONAL (both files inti this same folder)
+
+:::dEPLOY APPLICATIONS::
+in this case we're gonna use HELM3 

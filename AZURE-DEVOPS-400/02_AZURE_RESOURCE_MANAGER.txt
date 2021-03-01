@@ -1,0 +1,34 @@
+https://docs.microsoft.com/en-us/learn/modules/control-and-organize-with-azure-resource-manager/
+
+Resource group (rg):
+It is a logical container for resources deployed on azure
+no se pueden tenr rgroup dentro de otros--no adinamiento 
+No se pueden trasladar recursos enre rg tan facilmente, existen limitaciones 
+un recurso(apiGateway, virtual machine) pertenece a un solo rg
+No se pueden crear recurson sin indicar el resource group al que pertenecerá
+
+Establezca un standar de nombramiento y oriente los rg por area, departamento--(egv en 5ur4), location, tipo, ,por ambiente? por tipo de recursos ege vm-rg paa virtual machines
+cominación etc 
+https://docs.microsoft.com/en-us/learn/modules/control-and-organize-with-azure-resource-manager/2-principles-of-resource-groups
+
+
+si hay algo temporal entonces temp-rg y se elimina fácil todos los recursos dentro del él solo con borrar el rg
+si se borra un rg todo sus hijos se borran 
+se le puede aplicar  role-based access control (RBAC) permission
+
+cuando se crea un Rg automáticamente se crea el Rg NetworkWatcherRG para :
+provides tools to monitor, diagnose, view metrics, and enable or disable logs for resources in an Azure virtual network
+
+Cuando se crea un aks se crea el MC_cluster_name (MC=manged cluster)
+
+https://docs.microsoft.com/en-us/learn/modules/control-and-organize-with-azure-resource-manager/3-use-tagging-to-organize-resources
+Using tags to filter in a easy way 
+
+Recomendado para billing eg si se usa multiples VM coloquele el tag del area de negocio y al exportar la factura saldrá el tag correspondiente
+tags para automatizacion eg shutdown:6PM and startup:7AM  así cree una automatización que vea estos tags y ejecute 
+
+https://docs.microsoft.com/en-us/learn/modules/control-and-organize-with-azure-resource-manager/4-use-policies-to-enforce-standards
+policies to ensure standars
+por ejemplo si se desea que x recurso creado tenga Y tag 
+
+https://docs.microsoft.com/en-us/learn/modules/control-and-organize-with-azure-resource-manager/5-role-based-access

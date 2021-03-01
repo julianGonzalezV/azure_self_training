@@ -1,0 +1,145 @@
+A projet finish, the product evolve 
+
+Azure devops content
+
+topics.
+capture-application-logs-app-service
+	Enable app logging on an Azure Web App.
+	View live app logging activity with the log streaming service.
+	Retrieve app log files from an app with Kudu or the Azure CLI.
+	
+::::::::::::::::::::::::::
+https://docs.microsoft.com/en-us/learn/modules/capture-application-logs-app-service/2-enable-and-configure-app-service-application-logging
+Logging support
+ASP.NET	Windows	Error, Warning, Information, Verbose	File system, Blob storage
+ASP.NET Core	Windows	Error, Warning, Information, Verbose	File system, Blob storage
+ASP.NET Core	Linux	Error	File system
+Node.js	Windows	Error (STDERR), Information (STDOUT), Warning, Verbose	File system, Blob storage
+Node.js	Linux	Error	File system
+Java	Linux	Error	File system
+
+Alternatives to app diagnostics
+Azure Application Insights
+	tiene costo ..se puede configurar altertas cuando se alcanza el límite inferior
+	
+Enable logging using the Azure portal(lefth menu >>Diagnostics logs)
+Enable logging using the Azure CLI
+
+$az webapp log config --application-logging true --level verbose --name <app-name> --resource-group <resource-group-name>
+
+for an app called contosofashions123 then:
+az webapp log config --application-logging true --level verbose --name contosofashions123 --resource-group contosofashionsRG
+
+Error level only 
+az webapp log config --application-logging false --name <app-name> --resource-group <resource-group-name>
+
+:::::::Exercise - Enable and Configure App Service Application Logging using the Azure Portal
+https://docs.microsoft.com/en-us/learn/modules/capture-application-logs-app-service/3-enable-and-configure-app-service-application-logging-using-the-azure-portal
+en la consola estbelcer las sogientes variables de entorno 
+gitRepo=https://github.com/MicrosoftDocs/mslearn-capture-application-logs-app-service
+appName="contosofashions$RANDOM"
+appPlan="contosofashionsAppPlan"
+appLocation=eastus
+resourceGroup=learn-6636e1f2-58bb-46e6-a23d-87319f156817
+storageAccount=sa$appName
+
+Probar efecto : => echo $appName
+
+Deploy the web app:
+az appservice plan create --name $appPlan --resource-group $resourceGroup --location $appLocation --sku FREE
+az webapp create --name $appName --resource-group $resourceGroup --plan $appPlan --deployment-source-url $gitRepo
+
+anotar el randomName en mi caso "contosofashions29578"
+
+
+Crear el stprage account:
+
+varificar al rndomname, en  mi caso "sacontosofashions31272"
+
+Luego de que se cree el app(toma varios minutos) y el storage entonces:
+Enable logging using the Azure portal
+
+
+:::::::::::::::::::::::::::
+View Live Application Logging with the Log Streaming Service
+https://docs.microsoft.com/en-us/learn/modules/capture-application-logs-app-service/4-view-live-application-logging-activity-with-the-log-streaming-service
+
+Whent to use live log streaming?
+si se desea vver el log en tiempo real (se conecta solo a una instancia del app)
+
+PERO NO ES RECOMENDADO cuando se tiene multiples instancias de la app, en este caso en mejor revisa los logs offline
+Start LIVE LOG STREAMING
+
+1) Vía azure cli
+az webapp log tail --name <app name> --resource-group <resource group name>
+
+en este ejemplo 
+az webapp log tail --name contosofashions29578 --resource-group learn-6636e1f2-58bb-46e6-a23d-87319f156817
+
+Stop:
+Press Ctrl+C
+
+
+2) CURL
+con azure cli o postman
+
+curl -u {username} https://{sitename}.scm.azurewebsites.net/api/logstream
+curl -u contosofashions29578\$contosofashions29578 https://contosofashions29578.scm.azurewebsites.net/api/logstream
+
+Pmgtz38mSpwk3c1gM6srylNLRBhdBEa8q7dy8aFnlodjBD9oEiGFo6C0ZrPD
+Pmgtz38mSpwk3c1gM6srylNLRBhdBEa8q7dy8aFnlodjBD9oEiGFo6C0ZrPD
+::::::::::::
+https://docs.microsoft.com/en-us/learn/modules/capture-application-logs-app-service/5-view-live-application-logging-activity-with-the-log-streaming-service-using-azure-cli
+
+
+az webapp log tail  --resource-group learn-6636e1f2-58bb-46e6-a23d-87319f156817 --name contosofashions29578
+
+::::::::::::
+https://docs.microsoft.com/en-us/learn/modules/capture-application-logs-app-service/6-retrieve-application-log-files-from-an-application
+
+On windows :
+Application - Contains application-generated messages, if File System application logging has been enabled.
+DetailedErrors - Contains detailed Web server error logs, if Detailed error messages have been enabled.
+http - Contains IIS-level logs, if Web server logging has been enabled.
+W3SVC<number> - Contains details of all failed http requests, if Failed request tracing has been enabled.
+
+On Linux
+ Docker log file--uderlying docker container
+ 
+
+Methods to retrieve:
+1) 
+AZ cli
+az webapp log download --log-file \<_filename_\>.zip  --resource-group \<_resource group name_\> --name \<_app name_\>
+
+az webapp log download --log-file \<_filename_\>.zip  --resource-group \learn-6636e1f2-58bb-46e6-a23d-87319f156817 --name \contosofashions29578
+salida
+Downloaded logs to <_filename_>.zi
+
+ver info/contenido del zip 
+zipinfo -1 contosofashions.zip
+
+unzip: solo el log del aplicativo dentro del zip y retornarlo en un .txt
+unzip -j contosofashions.zip LogFiles/Application/*.txt
+Salida:
+Archive:  logsprueba.zip
+  inflating: c01540-13796-637479824103570237.txt
+
+
+See content file:
+code *.txt
+ctrl+Q to exit
+
+2) Kudu: it manages deployment and troubleshooting(including logs) for Azure Web Apps, 
+SCM:Source control management 
+
+04_logs.png
+igual lo lleva a https://contosofashions29578.scm.azurewebsites.net/ jeje
+
+
+
+
+
+
+
+
