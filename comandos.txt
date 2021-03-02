@@ -216,7 +216,7 @@ docker push transversallab.azurecr.io/pruebas/springbootimage:1.0
 
 helm package --version 1.0.0 --app-version=1.0 ./charts/prueba-springboot
 
-az acr helm push -n transversallab --username transversallab --password CeTrnXREr3NUhUmCPn=OoXwq6e53DwAC prueba-springboot-1.0.0.tgz --force
+az acr helm push -n transversallab --username transversallab --password xxxx prueba-springboot-1.0.0.tgz --force
 
 kubectl apply -f ./charts/transversal-ingress.yaml --namespace transversal
 
