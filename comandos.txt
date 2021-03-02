@@ -60,9 +60,9 @@ docker-compose build
 docker build -t ms-api-sel . --build-arg APP_PORT=8081 --build-arg APP_NAME=ms-api-sel --build-arg STAGE=develop
 
 #Hacer tag de las imagenes
-docker tag ms-flujo-negocio-ventas-digitales projecenvironment.azurecr.io/aplicaciones/msflujonegocioventasdigitales:1.0.0
+docker tag ms-flujo-negocio-xxx-digitales projecenvironment.azurecr.io/aplicaciones/msflujonegocioxxxdigitales:1.0.0
 docker tag ms-maestros-sel projecenvironment.azurecr.io/aplicaciones/msmaestros:1.0.0
-docker tag ohs-ventas-digitales projecenvironment.azurecr.io/aplicaciones/ohsventasdigitales:1.0.0
+docker tag ohs-xxx-digitales projecenvironment.azurecr.io/aplicaciones/ohsxxxdigitales:1.0.0
 docker tag ms-servicio-pagos-sel projecenvironment.azurecr.io/aplicaciones/msserviciopagos:1.0.0
 docker tag ms-api-sel projecenvironment.azurecr.io/aplicaciones/msapi:1.0.0
 docker tag front_end_sel projecenvironment.azurecr.io/aplicaciones/webxxxenlinea:1.0.0
@@ -99,18 +99,18 @@ helm repo add projecenvironment https://projecenvironment.azurecr.io/helm/v1/rep
 repolab
 #Generar los comprimidos de todos los charts
 helm package --version 1.0.0 --app-version=1.0.0 ms-api-sel-chart
-helm package --version 1.0.0 --app-version=1.0.0 ms-flujo-negocio-ventas-digitales-chart
+helm package --version 1.0.0 --app-version=1.0.0 ms-flujo-negocio-xxx-digitales-chart
 helm package --version 1.0.0 --app-version=1.0.0 ms-maestros-sel-chart
 helm package --version 1.0.0 --app-version=1.0.0 ms-servicio-pagos-sel-chart
-helm package --version 1.0.0 --app-version=1.0.0 ohs-ventas-digitales-chart
+helm package --version 1.0.0 --app-version=1.0.0 ohs-xxx-digitales-chart
 
 
 #Hacer push de los charts al acr
 az acr helm push -n projecenvironment -u projecenvironment -p <PASWORD> ms-api-sel-chart-1.0.0.tgz --force
-az acr helm push -n projecenvironment -u projecenvironment -p PASSWORD ms-flujo-negocio-ventas-digitales-chart-1.0.0.tgz --force
+az acr helm push -n projecenvironment -u projecenvironment -p PASSWORD ms-flujo-negocio-xxx-digitales-chart-1.0.0.tgz --force
 az acr helm push -n projecenvironment -u projecenvironment -p PASSWORD ms-maestros-sel-chart-1.0.0.tgz --force
 az acr helm push -n projecenvironment -u projecenvironment -p PASSWORD ms-servicio-pagos-sel-chart-1.0.0.tgz --force
-az acr helm push -n projecenvironment -u projecenvironment -p PASSWORDohs-ventas-digitales-chart-1.0.0.tgz --force
+az acr helm push -n projecenvironment -u projecenvironment -p PASSWORDohs-xxx-digitales-chart-1.0.0.tgz --force
 
 
 
@@ -121,16 +121,16 @@ helm repo update
 #uninstall el chart del cluster de AKS
 helm uninstall  ms-api-sel  --namespace=xxx-en-linea
 helm uninstall  ms-maestros-sel  --namespace=xxx-en-linea
-helm uninstall  ms-flujo-negocio-ventas-digitales --namespace=xxx-en-linea
-helm uninstall  ohs-ventas-digitales --namespace=xxx-en-linea
+helm uninstall  ms-flujo-negocio-xxx-digitales --namespace=xxx-en-linea
+helm uninstall  ohs-xxx-digitales --namespace=xxx-en-linea
 helm uninstall  ms-servicio-pagos-sel  --namespace=xxx-en-linea
 helm uninstall  ms-servicio-pagos-sel  --namespace=xxx-en-linea
 
 #Instalar el chart en el cluster de aks
 helm upgrade --install --version 1.0.0  ms-api-sel projecenvironment/ms-api-sel-chart --namespace=xxx-en-linea
-helm upgrade --install --version 1.0.0  ms-flujo-negocio-ventas-digitales projecenvironment/ms-flujo-negocio-ventas-digitales-chart --namespace=xxx-en-linea
+helm upgrade --install --version 1.0.0  ms-flujo-negocio-xxx-digitales projecenvironment/ms-flujo-negocio-xxx-digitales-chart --namespace=xxx-en-linea
 helm upgrade --install --version 1.0.0  ms-maestros-sel projecenvironment/ms-maestros-sel-chart --namespace=xxx-en-linea
-helm upgrade --install --version 1.0.0  ohs-ventas-digitales projecenvironment/ohs-ventas-digitales-chart --namespace=xxx-en-linea
+helm upgrade --install --version 1.0.0  ohs-xxx-digitales projecenvironment/ohs-xxx-digitales-chart --namespace=xxx-en-linea
 helm upgrade --install --version 1.0.0  ms-servicio-pagos-sel projecenvironment/ms-servicio-pagos-sel-chart --namespace=xxx-en-linea
 
 #Agrega el repo de NGINX para poder configurar el ingress
@@ -191,13 +191,13 @@ docker run -it -p 9090:9090 --name service-gateway gateway
 
 kubectl get services/pod/ingress --namespace=xxx-en-linea
 --dry-run --debug # execution plan
-helm upgrade --install --version 1.0.0  ms-flujo-negocio-ventas-digitales projecenvironment/ms-flujo-negocio-ventas-digitales-chart --namespace=xxx-en-linea --set replicaCount=2
+helm upgrade --install --version 1.0.0  ms-flujo-negocio-xxx-digitales projecenvironment/ms-flujo-negocio-xxx-digitales-chart --namespace=xxx-en-linea --set replicaCount=2
 kubectl describe ingress xxx-en-linea --namespace xxx-en-linea
 
-docker build -t ms-flujo-negocio-ventas-digitales . --build-arg APP_PORT=8080 --build-arg APP_NAME=ms-flujo-negocio-ventas-digitales --build-arg STAGE=develop # el nombre de la app viene del dockerCompose
+docker build -t ms-flujo-negocio-xxx-digitales . --build-arg APP_PORT=8080 --build-arg APP_NAME=ms-flujo-negocio-xxx-digitales --build-arg STAGE=develop # el nombre de la app viene del dockerCompose
 az acr login --name projecenvironment
-docker tag ms-flujo-negocio-ventas-digitales projecenvironment.azurecr.io/aplicaciones/msflujonegocioventasdigitales:2.0.0 
-docker push projecenvironment.azurecr.io/aplicaciones/msflujonegocioventasdigitales:2.0.0 
+docker tag ms-flujo-negocio-xxx-digitales projecenvironment.azurecr.io/aplicaciones/msflujonegocioxxxdigitales:2.0.0 
+docker push projecenvironment.azurecr.io/aplicaciones/msflujonegocioxxxdigitales:2.0.0 
 
 helm install nginx-ingress stable/nginx-ingress --namespace transversal 
 

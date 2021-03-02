@@ -70,7 +70,7 @@ output(note los cambios en el JSON por ejemplo "adminUserEnabled": false,):
 Name: $az acr credential show -n ecoDigitalAcr -g ecoDigitalGr --query username -o tsv
 	Result: ecoDigitalAcr
 Password: $ az acr credential show -n ecoDigitalAcr -g ecoDigitalGr --query passwords[0].value -o tsv
-	Result/ jDXkvcBJvcNoWSYGJ9nzfO2=BrshI3QG
+	Result/ jxxxxx=BrshI3QG
 
 
 5) create AKS Cluster, 
@@ -84,7 +84,7 @@ OutPut
   "appId": "481d2be0-062c-4528-86cb-f57c3da8f8cc",
   "displayName": "ecoDigitalClusterSp",
   "name": "http://ecoDigitalClusterSp",
-  "password": "8c023497-95eb-49a7-b8c8-926bc14c1384",
+  "password": "xxxxxx",
   "tenant": "8673c70e-96ae-4295-bcef-ca5d562e12cc"
 }
 
@@ -184,7 +184,7 @@ link https://kubernetes.io/docs/concepts/configuration/secret/
 	Formato:
 	kubectl create secret docker-registry [dockerRegistrySecretName] --docker-server [acrRegistryName].azurecr.io --docker-username [acrRegistryUsername] --docker-password [acrRegistryPassword] --docker-email [acrEmailAccount] --namespace challenge-01
 	Comando: 
-	kubectl create secret docker-registry juligoveacr01-auth --docker-server ecoDigitalAcr.azurecr.io --docker-username ecoDigitalAcr --docker-password jDXkvcBJvcNoWSYGJ9nzfO2=BrshI3QG --docker-email j.andres2087@hotmail.com --namespace development
+	kubectl create secret docker-registry juligoveacr01-auth --docker-server Acr.azurecr.io --docker-username ecoDigitalAcr --docker-password xxxx --docker-email j.andres2087@hotmail.com --namespace development
 		Output secret/juligoveacr01-auth created
 
 Step 15: install helm: HELM chart allows the applicatins deployment in Kubernetes Service.
@@ -272,12 +272,12 @@ $ az acr credential show -n ecoDigitalAcr --query username
 SOLO PASSWORD
 az acr credential show -n ecoDigitalAcr --query passwords[0].value
 az container create \
-    --resource-group ecoDigitalGr \
+    --resource-group xxxxGr \
     --name acr-tasks \
     --image ecoDigitalAcr.azurecr.io/helloacrtasks:v1 \
     --registry-login-server ecoDigitalAcr.azurecr.io \
     --registry-username ecoDigitalAcr \
-    --registry-password jDXkvcBJvcNoWSYGJ9nzfO2=BrshI3QG \
+    --registry-password sadsadasd \
     --dns-name-label acr-tasks-ecoDigitalAcr \
     --query "{FQDN:ipAddress.fqdn}" \
     --output table

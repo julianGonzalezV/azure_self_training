@@ -28,13 +28,13 @@ az --version --> esto no será problema si se usa el shell de azure sin instalar
 ¡¡¡If running the commands in this quickstart locally (instead of Azure Cloud Shell), ensure you run the commands as administrator!!!
 
 1)
-$az group create --name ventasDigitales --location eastus
+$az group create --name xxxDigitales --location eastus
 para el ejemplo retorna 
 {
-  "id": "/subscriptions/74549a7d-42d2-4b1d-ac9a-c8f1a4e47489/resourceGroups/ventasDigitales",
+  "id": "/subscriptions/74549a7d-42d2-4b1d-ac9a-c8f1a4e47489/resourceGroups/xxxDigitales",
   "location": "eastus",
   "managedBy": null,
-  "name": "ventasDigitales",
+  "name": "xxxDigitales",
   "properties": {
     "provisioningState": "Succeeded"
   },
@@ -45,15 +45,15 @@ para el ejemplo retorna
 2) Create azure container registry
 az acr create -n $ACRName -g $ACRResourceGroupName --sku Standard
 en el ejemplo sería
-az acr create -n ventasDigitalesACRName -g ventasDigitales --sku Standard
+az acr create -n xxxDigitalesACRName -g xxxDigitales --sku Standard
 Salida del comando:
 {
   "adminUserEnabled": false,
   "creationDate": "2020-02-12T00:18:11.190467+00:00",
-  "id": "/subscriptions/74549a7d-42d2-4b1d-ac9a-c8f1a4e47489/resourceGroups/ventasDigitales/providers/Microsoft.ContainerRegistry/registries/ventasDigitalesACRName",
+  "id": "/subscriptions/74549a7d-42d2-4b1d-ac9a-c8f1a4e47489/resourceGroups/xxxDigitales/providers/Microsoft.ContainerRegistry/registries/xxxDigitalesACRName",
   "location": "eastus",
-  "loginServer": "ventasdigitalesacrname.azurecr.io",
-  "name": "ventasDigitalesACRName",
+  "loginServer": "xxxdigitalesacrname.azurecr.io",
+  "name": "xxxDigitalesACRName",
   "networkRuleSet": null,
   "policies": {
     "quarantinePolicy": {
@@ -70,7 +70,7 @@ Salida del comando:
     }
   },
   "provisioningState": "Succeeded",
-  "resourceGroup": "ventasDigitales",
+  "resourceGroup": "xxxDigitales",
   "sku": {
     "name": "Standard",
     "tier": "Standard"
@@ -82,16 +82,16 @@ Salida del comando:
 }
 
 Then activate 
-az acr update -n ventasDigitalesACRName --admin-enabled true
+az acr update -n xxxDigitalesACRName --admin-enabled true
 To search ACr information like ACR name and passwprd
 Salida del comando: (note los cambios en el JSON por ejemplo "adminUserEnabled": false,)
 {
   "adminUserEnabled": true,
   "creationDate": "2020-02-12T00:18:11.190467+00:00",
-  "id": "/subscriptions/74549a7d-42d2-4b1d-ac9a-c8f1a4e47489/resourceGroups/ventasDigitales/providers/Microsoft.ContainerRegistry/registries/ventasDigitalesACRName",
+  "id": "/subscriptions/74549a7d-42d2-4b1d-ac9a-c8f1a4e47489/resourceGroups/xxxDigitales/providers/Microsoft.ContainerRegistry/registries/xxxDigitalesACRName",
   "location": "eastus",
-  "loginServer": "ventasdigitalesacrname.azurecr.io",
-  "name": "ventasDigitalesACRName",
+  "loginServer": "xxxdigitalesacrname.azurecr.io",
+  "name": "xxxDigitalesACRName",
   "networkRuleSet": null,
   "policies": {
     "quarantinePolicy": {
@@ -108,7 +108,7 @@ Salida del comando: (note los cambios en el JSON por ejemplo "adminUserEnabled":
     }
   },
   "provisioningState": "Succeeded",
-  "resourceGroup": "ventasDigitales",
+  "resourceGroup": "xxxDigitales",
   "sku": {
     "name": "Standard",
     "tier": "Standard"
@@ -120,15 +120,15 @@ Salida del comando: (note los cambios en el JSON por ejemplo "adminUserEnabled":
 }
 
 
-Get ACR Name And Password
-Name: $az acr credential show -n ventasDigitalesACRName -g ventasDigitales --query username -o tsv
-	Result: ventasDigitalesACRName
-Password: $ az acr credential show -n ventasDigitalesACRName -g ventasDigitales --query passwords[0].value -o tsv
+Get ACR Name And PWD
+Name: $az acr credential show -n ACRName -g gname --query username -o tsv
+	Result: ACRName
+pwd: $ az acr credential show -n xxxDigitalesACRName -g gname --query passwords[0].value -o tsv
 	Result/ E5Aw60RmK+mHBx3uIq+S9uXIq7ezjrbX
 create AKS Cluster, 
 az aks create --resource-group myResourceGroup --name myAKSCluster --node-count 1 --enable-addons monitoring --generate-ssh-keys
 para el caso de prueba es:
-az aks create --resource-group ventasDigitales --name vDigitalesCl --node-count 1 --enable-addons monitoring --generate-ssh-keys
+az aks create --resource-group xxxDigitales --name vDigitalesCl --node-count 1 --enable-addons monitoring --generate-ssh-keys
 
 NOTA:el aks create no funcionó, en su lugar los comandos del repo https://github.com/robece/microservices-aks si funciona, a continuación los comandos 
 discriminados uno a uno (en el repo https://github.com/robece/microservices-aks está todo en un shell script), los scrips son:
@@ -150,8 +150,8 @@ Container: an executable image that contains software and its dependencies, it u
 Diferencia enre nodo y pods? Un pod ES una unidad de ejecución que corre en un nodo y representa la configuracion para correr un solo container 
 Un nodo es una maquina virtual o fisica y puede tener varios pods, que son ejecutados coomo servicios en un nodo 
 
-Cuál es el alcance de un cluster? por area equipo eg ventasDigitales, por proyecto(saludDigital)?
-Dado que el cluster contiene varios containers entonces lo orientaré para este ejemplo por área de tecnología en este caso ventasDigitales
+Cuál es el alcance de un cluster? por area equipo eg xxxDigitales, por proyecto(saludDigital)?
+Dado que el cluster contiene varios containers entonces lo orientaré para este ejemplo por área de tecnología en este caso xxxDigitales
 
 
 https://docs.microsoft.com/bs-latn-ba/azure/aks/ PASO A PASO
