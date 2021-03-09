@@ -40,7 +40,7 @@ $ az account list --output table
 Salida:
 Name                           CloudName    SubscriptionId                        State    IsDefault
 -----------------------------  -----------  ------------------------------------  -------  -----------
-NAME-dll  AzureCloud   3183f5a2-9f04-45a7-b8bd-81b35c10352b  Enabled  True
+NAME-dll  AzureCloud   xx-xx-xx-xx-xxxc10352b  Enabled  True
 Seguros generales              AzureCloud   SUB  Enabled  False
 NAME-lab  AzureCloud   SUBSC  Enabled  False
 
@@ -148,7 +148,7 @@ Si no ejecuta el paso 7 y va al 8 obtendrá ERROR de no tener cluster para ejecu
 
 7) Logearse al cluster AKS
 DLLO:
-az aks get-credentials -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscription "3183f5a2-9f04-45a7-b8bd-81b35c10352b" 
+az aks get-credentials -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscription "xx-xx-xx-xx-xxxc10352b" 
 
 
 LAB:
@@ -156,7 +156,7 @@ az aks get-credentials -n aks-name-lab-001 --resource-group rg-NAME-lab-001 --su
 
 	$kubectl config view 
 
-az aks browse -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscription "3183f5a2-9f04-45a7-b8bd-81b35c10352b"
+az aks browse -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscription "xx-xx-xx-xx-xxxc10352b"
 
 8)Crear el Service
  kubectl create -f ohs-salud-notificacion/service.yml
@@ -174,13 +174,13 @@ az aks browse -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscript
 ----PARA CONSTATAR LA CREACIÓN DE LOS COMPONENETES EJECUTE EL COMANDO QUE PERMITE HACER el BROWSE de éste para abrir consola administrativa
 Nota: Si pide seleccionar modo de acceso vea 11_AKS_BROWSE.png y 12_AKS_BROWSE.png
 DLLO:
-az aks browse -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscription "3183f5a2-9f04-45a7-b8bd-81b35c10352b"
+az aks browse -n aks-name-dllo-001 --resource-group rg-NAME-dllo-001 --subscription "xx-xx-xx-xx-xxxc10352b"
 
 LAB:
 az aks browse --name aks-name-lab-001 --resource-group rg-NAME-lab-001 --subscription "SUBSC"
 
 PDN:
-az aks browse --name aks-name-pdn-001 --resource-group rg-NAME-pdn-001 --subscription "79b69f2a-91e4-426a-b1eb-3a59fd3dd310"
+az aks browse --name aks-name-pdn-001 --resource-group rg-NAME-pdn-001 --subscription "xx-xx-xx-xx-xxfd3dd310"
 
 
 13_deployment_error.PNG Error cuando se apunta a la imagen incorrecta desde el deployment
